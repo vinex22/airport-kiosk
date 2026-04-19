@@ -107,7 +107,6 @@
         <span class="bounce3">+</span>
         <img src="https://img.icons8.com/fluency/48/camera.png" alt="Vision" class="bounce3" />
     </div>
-    <div class="nav"><a href="/">Back to Security View</a></div>
     <div class="header">
         <h1>✈️ Can I Carry This On Board?</h1>
         <span class="badge badge-llm">GPT-5.4</span>
@@ -185,7 +184,7 @@
                 document.getElementById('reason').textContent = '';
                 document.getElementById('tip').textContent = '';
 
-                const resp = await fetch('/kiosk/check', { method: 'POST', body: form });
+                const resp = await fetch('/check', { method: 'POST', body: form });
                 const reader = resp.body.getReader();
                 const decoder = new TextDecoder();
                 let jsonStr = '';

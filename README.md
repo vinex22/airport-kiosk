@@ -1,17 +1,16 @@
-# 🛡️ airport-kiosk
+# ✈️ airport-kiosk
 
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![Azure AI Vision](https://img.shields.io/badge/Azure%20AI%20Vision-0078D4?logo=microsoftazure&logoColor=white)](https://azure.microsoft.com/products/ai-services/ai-vision)
 [![Azure OpenAI](https://img.shields.io/badge/Azure%20OpenAI-GPT--5.4-412991?logo=openai&logoColor=white)](https://azure.microsoft.com/products/ai-services/openai-service)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Deploy: Azure App Service](https://img.shields.io/badge/Deployed%20on-Azure%20App%20Service-0078D4?logo=microsoftazure)](https://airport-kiosk.azurewebsites.net)
 
 Created by [vinayjain@microsoft.com](mailto:vinayjain@microsoft.com) / [vinex22@gmail.com](mailto:vinex22@gmail.com)
 
-**AI-powered airport security screening** that uses **Azure AI Vision** and **Azure OpenAI GPT-5.4** to detect objects in real time and assess whether items are permitted in cabin baggage — based on ICAO international aviation security rules. Built with **FastAPI**, authenticated with `DefaultAzureCredential` (no API keys 🔑).
+**"Can I Carry This On Board?"** — an AI-powered airport self-service kiosk that uses **Azure OpenAI GPT-5.4** to determine whether an item is allowed in cabin baggage, based on ICAO international aviation security rules. Built with **FastAPI**, authenticated with `DefaultAzureCredential` (no API keys 🔑).
 
-> **Keywords:** airport security AI, baggage screening AI, object detection Azure, carry-on item checker, aviation security kiosk, Azure AI Vision, GPT-5.4 multimodal, FastAPI computer vision, real-time threat detection, ICAO prohibited items
+> **Keywords:** airport kiosk AI, carry-on item checker, cabin baggage rules, aviation security kiosk, Azure OpenAI GPT-5.4 multimodal, ICAO prohibited items, FastAPI camera app, self-service airport screening
 
 ---
 
@@ -21,7 +20,7 @@ Created by [vinayjain@microsoft.com](mailto:vinayjain@microsoft.com) / [vinex22@
 - [Prerequisites](#-prerequisites)
 - [Project Structure](#-project-structure)
 - [Configuration](#️-configuration)
-- [Features](#-features)
+- [Features](#️-features)
 - [API Endpoints](#-api-endpoints)
 - [Local Development](#-local-development)
 - [Deployment](#️-deployment)
@@ -33,13 +32,12 @@ Created by [vinayjain@microsoft.com](mailto:vinayjain@microsoft.com) / [vinex22@
 
 ## 🔎 Overview
 
-| | Security Camera (`/`) | Passenger Kiosk (`/kiosk`) |
-|---|---|---|
-| Purpose | Real-time object detection on camera feed | "Can I carry this?" self-service item check |
-| AI model | Azure AI Vision + GPT-5.4-nano | GPT-5.4 (multimodal) |
-| Output | Bounding boxes + threat flags | Allowed / Prohibited verdict with ICAO rules |
-| Response | JSON per frame | Streaming SSE (token-by-token) |
-| Best for | Security operators, monitoring | Passengers, self-service kiosks |
+Point your item at the camera, tap **Scan**, and get an instant verdict:
+
+- **✅ Allowed** — item is safe to carry on board
+- **🚫 Prohibited** — item is banned from cabin baggage, with the specific rule cited
+
+The kiosk covers all ICAO prohibited categories: weapons, sharp objects, tools, blunt instruments, liquids >100ml, lithium batteries, and dangerous goods.
 
 **Live instance:** https://airport-kiosk.azurewebsites.net
 
@@ -47,7 +45,7 @@ Created by [vinayjain@microsoft.com](mailto:vinayjain@microsoft.com) / [vinex22@
 
 1. Python 3.11+
 2. Azure AI Services (multi-service) account with GPT-5.4 deployment
-3. Azure Blob Storage account
+3. Azure Blob Storage account (for image archival)
 4. `Cognitive Services User` role assigned for your identity (or managed identity)
 5. `az login` completed (for local dev)
 
@@ -57,13 +55,13 @@ Created by [vinayjain@microsoft.com](mailto:vinayjain@microsoft.com) / [vinex22@
 airport-kiosk/
 ├── .env.example          # environment variable template
 ├── .gitignore
+├── LICENSE
 ├── README.md
 ├── DEPLOYMENT.md         # full Azure App Service deployment guide
-├── main.py               # FastAPI application with all endpoints
+├── main.py               # FastAPI application
 ├── requirements.txt      # Python dependencies
 └── static/
-    ├── index.html        # Security camera view with object detection
-    └── kiosk.html        # Passenger self-service kiosk
+    └── kiosk.html        # Kiosk UI (camera + scan)
 ```
 
 ## ⚙️ Configuration
@@ -77,31 +75,21 @@ AZURE_STORAGE_ACCOUNT_URL=https://<your-storage>.blob.core.windows.net
 DEBUG=true
 ```
 
-## 🌐 Features
+## ✈️ Features
 
-### 🔍 Security Camera View (`/`)
-- Live webcam feed with continuous object detection
-- Two detection modes:
-  - **Computer Vision** — Azure AI Vision object detection with bounding boxes
-  - **LLM (GPT-5.4-nano)** — Multimodal LLM-based threat detection with threat classification
-- Real-time bounding box overlay on video feed
-
-### ✈️ Passenger Kiosk (`/kiosk`)
-- "Can I Carry This?" self-service kiosk for passengers
-- Point your item at the camera, tap **Scan**, and get an instant verdict
-- Classifies items as **Allowed** or **Prohibited** based on international aviation security rules (ICAO guidelines, HK CAD packing tips)
-- Covers all prohibited categories: weapons, sharp objects, tools, blunt instruments, liquids >100ml, lithium batteries, dangerous goods
-- Streaming response for fast time-to-first-token
+- **Camera capture** — uses device camera (rear-facing on mobile) to photograph the item
+- **GPT-5.4 multimodal analysis** — sends image to Azure OpenAI for item identification
+- **ICAO rule matching** — checks against 6 prohibited categories + liquid/gel/aerosol rules + lithium battery rules
+- **Streaming response** — SSE token-by-token streaming for fast time-to-first-token
+- **Partial JSON rendering** — shows item name and verdict before the full response arrives
+- **Image archival** — all scanned images stored in Azure Blob Storage by date
 
 ## 🔌 API Endpoints
 
-| Method | Path           | Description                                      |
-|--------|----------------|--------------------------------------------------|
-| GET    | `/`            | Security camera view                             |
-| POST   | `/detect`      | Object detection via Azure AI Vision             |
-| POST   | `/detect-llm`  | Object detection via GPT-5.4-nano (threat-aware) |
-| GET    | `/kiosk`       | Passenger kiosk page                             |
-| POST   | `/kiosk/check` | Item check via GPT-5.4 (streaming SSE response)  |
+| Method | Path     | Description                                     |
+|--------|----------|-------------------------------------------------|
+| GET    | `/`      | Kiosk UI page                                   |
+| POST   | `/check` | Item check via GPT-5.4 (streaming SSE response) |
 
 ## 🚀 Local Development
 
@@ -141,23 +129,13 @@ az webapp deploy --name airport-kiosk --resource-group airport --src-path deploy
 ## 🧠 How It Works
 
 ```
-┌─────────────┐     POST /detect      ┌─────────────────┐     analyze()     ┌──────────────────┐
-│   Browser    │ ──── image frame ───> │  FastAPI Server  │ ───────────────> │ Azure AI Vision  │
-│  (webcam)    │ <─── bounding boxes ─ │   (main.py)      │ <── objects ──── │ (Image Analysis) │
-└─────────────┘                        └─────────────────┘                  └──────────────────┘
-
-┌─────────────┐     POST /detect-llm   ┌─────────────────┐   chat.completions  ┌──────────────┐
-│   Browser    │ ──── image frame ───> │  FastAPI Server  │ ─── base64 img ──> │ Azure OpenAI │
-│  (webcam)    │ <─── threat flags ─── │   (main.py)      │ <── JSON items ─── │ GPT-5.4-nano │
-└─────────────┘                        └─────────────────┘                     └──────────────┘
-
-┌─────────────┐     POST /kiosk/check  ┌─────────────────┐   chat (stream)     ┌──────────────┐
+┌─────────────┐     POST /check       ┌─────────────────┐   chat (stream)     ┌──────────────┐
 │   Browser    │ ──── photo ─────────> │  FastAPI Server  │ ─── base64 img ──> │ Azure OpenAI │
 │  (kiosk)     │ <─── SSE tokens ──── │   (main.py)      │ <── token stream ─ │  GPT-5.4     │
 └─────────────┘                        └─────────────────┘                     └──────────────┘
 ```
 
-All images are also uploaded to **Azure Blob Storage** for audit/archival, organized by endpoint and date.
+All scanned images are also uploaded to **Azure Blob Storage** for audit/archival, organized by date.
 
 ## 🛠️ Troubleshooting
 

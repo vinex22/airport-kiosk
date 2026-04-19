@@ -8,8 +8,6 @@ from fastapi import FastAPI, UploadFile, File, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, StreamingResponse
-from azure.ai.vision.imageanalysis import ImageAnalysisClient
-from azure.ai.vision.imageanalysis.models import VisualFeatures
 from azure.identity import DefaultAzureCredential
 from azure.storage.blob import BlobServiceClient
 from openai import AzureOpenAI
@@ -28,12 +26,12 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 logging.getLogger("openai").setLevel(logging.WARNING)
 logging.getLogger("httpcore").setLevel(logging.WARNING)
 
-logger = logging.getLogger("airport-vision")
+logger = logging.getLogger("airport-kiosk")
 logger.setLevel(logging.INFO)
 logger.propagate = False
 logger.handlers.clear()
 _fmt = logging.Formatter("%(asctime)s  %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
-_fh = logging.FileHandler("detections.log", mode="a")
+_fh = logging.FileHandler("kiosk.log", mode="a")
 _fh.setFormatter(_fmt)
 logger.addHandler(_fh)
 # Also log detections to stdout (captured by App Service / App Insights)
@@ -53,7 +51,7 @@ console.addHandler(_ch)
 if DEBUG:
     console.info("DEBUG mode enabled — verbose timing logs active")
 
-app = FastAPI(title="Airport Object Detection")
+app = FastAPI(title="Airport Kiosk - Can I Carry This?")
 
 app.add_middleware(
     CORSMiddleware,
@@ -64,14 +62,13 @@ app.add_middleware(
 
 endpoint = os.getenv("AZURE_AI_SERVICES_ENDPOINT")
 credential = DefaultAzureCredential()
-client = ImageAnalysisClient(endpoint=endpoint, credential=credential)
 
 llm_client = AzureOpenAI(
     azure_endpoint=endpoint,
     azure_ad_token_provider=lambda: credential.get_token("https://cognitiveservices.azure.com/.default").token,
     api_version="2024-12-01-preview",
 )
-llm_deployment = os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-5.4-nano")
+llm_deployment = os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-5.4")
 
 # Azure Blob Storage for captured images
 storage_account_url = os.getenv("AZURE_STORAGE_ACCOUNT_URL")
@@ -95,134 +92,10 @@ def upload_image_to_blob(image_data: bytes, endpoint_name: str):
 
 @app.get("/")
 async def index():
-    return FileResponse("static/index.html")
-
-
-@app.post("/detect")
-async def detect_objects(request: Request, image: UploadFile = File(...)):
-    client_ip = request.headers.get("x-forwarded-for", request.client.host).split(",")[0].strip()
-    t0 = time.perf_counter()
-    image_data = await image.read()
-    t_read = time.perf_counter()
-    console.debug(f"[CV] Image read: {len(image_data)} bytes in {(t_read-t0)*1000:.0f}ms")
-
-    upload_image_to_blob(image_data, "detect")
-
-    result = client.analyze(
-        image_data=image_data,
-        visual_features=[VisualFeatures.OBJECTS],
-    )
-    t_api = time.perf_counter()
-    console.debug(f"[CV] Azure Vision API call: {(t_api-t_read)*1000:.0f}ms")
-
-    detections = []
-    if result.objects is not None:
-        for obj in result.objects.list:
-            label = obj.tags[0].name if obj.tags else "unknown"
-            confidence = obj.tags[0].confidence if obj.tags else 0
-            detections.append({
-                "label": label,
-                "confidence": confidence,
-                "boundingBox": {
-                    "x": obj.bounding_box.x,
-                    "y": obj.bounding_box.y,
-                    "w": obj.bounding_box.width,
-                    "h": obj.bounding_box.height,
-                },
-            })
-
-    labels = [d['label'] for d in detections]
-    logger.info(f"[ComputerVision] ip={client_ip} | {', '.join(labels) if labels else 'no objects'}")
-    console.info(f"[CV] ip={client_ip} | Total: {(time.perf_counter()-t0)*1000:.0f}ms | {len(detections)} objects: {', '.join(labels)}")
-
-    return {"objects": detections}
-
-
-@app.post("/detect-llm")
-async def detect_objects_llm(request: Request, image: UploadFile = File(...)):
-    client_ip = request.headers.get("x-forwarded-for", request.client.host).split(",")[0].strip()
-    t0 = time.perf_counter()
-    image_data = await image.read()
-    b64_image = base64.b64encode(image_data).decode("utf-8")
-    t_encode = time.perf_counter()
-    console.debug(f"[LLM-Detect] Image read+encode: {len(image_data)} bytes in {(t_encode-t0)*1000:.0f}ms")
-
-    upload_image_to_blob(image_data, "detect-llm")
-
-    response = llm_client.chat.completions.create(
-        model=llm_deployment,
-        messages=[
-            {
-                "role": "system",
-                "content": (
-                    "You are an airport X-ray baggage screening system. Analyze the image as if it were "
-                    "from an airport security X-ray scanner or a live security camera feed. "
-                    "Identify ALL objects, paying special attention to prohibited/dangerous items: "
-                    "pistols, revolvers, firearms, knives, blades, scissors, darts, explosives, "
-                    "lighters, aerosol cans, liquids, batteries, electronics, wires, tools, "
-                    "and any other security-relevant items. Also identify normal items like bags, "
-                    "clothing, shoes, laptops, phones, bottles, zippers, boards, keys, coins. "
-                    "For each object, provide: label, confidence (0.0-1.0), and if threat detected "
-                    "set 'threat' to true. Respond ONLY with a JSON array, no markdown, no explanation. "
-                    'Example: [{"label": "pistol", "confidence": 0.93, "threat": true}, '
-                    '{"label": "laptop", "confidence": 0.95, "threat": false}]'
-                ),
-            },
-            {
-                "role": "user",
-                "content": [
-                    {"type": "text", "text": "Analyze this image for airport security screening. List all objects detected."},
-                    {
-                        "type": "image_url",
-                        "image_url": {"url": f"data:image/jpeg;base64,{b64_image}", "detail": "low"},
-                    },
-                ],
-            },
-        ],
-        max_completion_tokens=300,
-    )
-    t_llm = time.perf_counter()
-    console.debug(f"[LLM-Detect] LLM API call: {(t_llm-t_encode)*1000:.0f}ms")
-
-    raw = response.choices[0].message.content.strip()
-    # Strip markdown fences if the model wraps them
-    if raw.startswith("```"):
-        raw = raw.split("\n", 1)[1].rsplit("```", 1)[0].strip()
-
-    try:
-        items = json.loads(raw)
-    except json.JSONDecodeError:
-        logger.warning(f"LLM returned non-JSON: {raw}")
-        items = []
-
-    detections = [
-        {
-            "label": item.get("label", "unknown"),
-            "confidence": item.get("confidence", 0),
-            "threat": item.get("threat", False),
-        }
-        for item in items
-    ]
-
-    threats = [d['label'] for d in detections if d.get('threat')]
-    safe = [d['label'] for d in detections if not d.get('threat')]
-    parts = []
-    if threats:
-        parts.append(f"THREAT: {', '.join(threats)}")
-    if safe:
-        parts.append(f"safe: {', '.join(safe)}")
-    logger.info(f"[LLM] ip={client_ip} | {' | '.join(parts) if parts else 'no objects'}")
-    console.info(f"[LLM-Detect] ip={client_ip} | Total: {(time.perf_counter()-t0)*1000:.0f}ms | {len(detections)} objects")
-
-    return {"objects": detections}
-
-
-@app.get("/kiosk")
-async def kiosk():
     return FileResponse("static/kiosk.html")
 
 
-@app.post("/kiosk/check")
+@app.post("/check")
 async def kiosk_check(request: Request, image: UploadFile = File(...)):
     client_ip = request.headers.get("x-forwarded-for", request.client.host).split(",")[0].strip()
     t0 = time.perf_counter()
