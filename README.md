@@ -76,7 +76,16 @@ AZURE_AI_SERVICES_ENDPOINT=https://<your-ai-services>.services.ai.azure.com
 AZURE_OPENAI_DEPLOYMENT=gpt-5.4
 AZURE_STORAGE_ACCOUNT_URL=https://<your-storage>.blob.core.windows.net
 DEBUG=true
+SYSTEM_PROMPT=<optional: override the default system prompt>
 ```
+
+| Variable | Required | Description |
+|---|---|---|
+| `AZURE_AI_SERVICES_ENDPOINT` | Yes | Azure AI Services endpoint URL |
+| `AZURE_OPENAI_DEPLOYMENT` | No | Model deployment name (default: `gpt-5.4`) |
+| `AZURE_STORAGE_ACCOUNT_URL` | No | Blob storage URL for image archival |
+| `DEBUG` | No | Enable verbose timing logs (`true`/`false`) |
+| `SYSTEM_PROMPT` | No | Override the default ICAO rules prompt. If not set, the built-in prompt is used. Change this in Azure Portal > App Service > Configuration to update the prompt without redeploying. |
 
 ## ✈️ Features
 
