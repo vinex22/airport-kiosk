@@ -1,0 +1,115 @@
+<mxfile host="draw.io" modified="2026-04-19T15:00:00.000Z" agent="draw.io" version="24.0.0" type="device">
+  <diagram id="airport-kiosk-arch" name="Architecture">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Title -->
+        <mxCell id="title" value="✈️ Airport Kiosk — Architecture" style="text;html=1;fontSize=22;fontStyle=1;align=center;verticalAlign=middle;whiteSpace=wrap;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="350" y="20" width="500" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- User / Browser -->
+        <mxCell id="user" value="Passenger" style="shape=mxgraph.azure2.user;fillColor=#0078D4;fontColor=#333333;strokeColor=none;align=center;verticalLabelPosition=bottom;html=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="250" width="50" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- Browser / Kiosk -->
+        <mxCell id="browser" value="Browser&lt;br&gt;&lt;i style=&quot;font-size:11px;color:#888&quot;&gt;Camera + kiosk.html&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=2;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="230" width="160" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- Azure cloud boundary -->
+        <mxCell id="azure-cloud" value="Azure" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#0078D4;strokeWidth=3;verticalAlign=top;fontSize=16;fontStyle=1;align=left;spacingLeft=10;dashed=1;dashPattern=12 12;" vertex="1" parent="1">
+          <mxGeometry x="460" y="80" width="680" height="520" as="geometry"/>
+        </mxCell>
+
+        <!-- App Service -->
+        <mxCell id="appservice-icon" value="" style="image;aspect=fixed;html=1;points=[];align=center;image=img/lib/azure2/app_services/App_Services.svg;" vertex="1" parent="1">
+          <mxGeometry x="570" y="230" width="50" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="appservice" value="App Service&lt;br&gt;&lt;i style=&quot;font-size:11px;color:#888&quot;&gt;FastAPI + uvicorn&lt;/i&gt;&lt;br&gt;&lt;code style=&quot;font-size:10px;color:#666&quot;&gt;airport-kiosk.azurewebsites.net&lt;/code&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=2;fontSize=13;fontStyle=1;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="520" y="195" width="250" height="130" as="geometry"/>
+        </mxCell>
+
+        <!-- Stage numbers -->
+        <mxCell id="step1" value="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#0078D4;fontColor=#ffffff;strokeColor=none;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="395" y="245" width="30" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="step2" value="2" style="ellipse;whiteSpace=wrap;html=1;fillColor=#0078D4;fontColor=#ffffff;strokeColor=none;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="820" y="200" width="30" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="step3" value="3" style="ellipse;whiteSpace=wrap;html=1;fillColor=#0078D4;fontColor=#ffffff;strokeColor=none;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="820" y="400" width="30" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="step4" value="4" style="ellipse;whiteSpace=wrap;html=1;fillColor=#0078D4;fontColor=#ffffff;strokeColor=none;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="400" width="30" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- Azure OpenAI -->
+        <mxCell id="openai-icon" value="" style="image;aspect=fixed;html=1;points=[];align=center;image=img/lib/azure2/ai_machine_learning/Azure_OpenAI.svg;" vertex="1" parent="1">
+          <mxGeometry x="920" y="150" width="55" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="openai" value="Azure OpenAI&lt;br&gt;&lt;i style=&quot;font-size:11px;color:#888&quot;&gt;GPT-5.4 (multimodal)&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="880" y="120" width="200" height="100" as="geometry"/>
+        </mxCell>
+
+        <!-- Blob Storage -->
+        <mxCell id="blob-icon" value="" style="image;aspect=fixed;html=1;points=[];align=center;image=img/lib/azure2/storage/Storage_Accounts.svg;" vertex="1" parent="1">
+          <mxGeometry x="920" y="380" width="50" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="blob" value="Blob Storage&lt;br&gt;&lt;i style=&quot;font-size:11px;color:#888&quot;&gt;Image archival&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=2;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="880" y="350" width="200" height="100" as="geometry"/>
+        </mxCell>
+
+        <!-- Managed Identity -->
+        <mxCell id="mi-icon" value="" style="image;aspect=fixed;html=1;points=[];align=center;image=img/lib/azure2/identity/Managed_Identities.svg;" vertex="1" parent="1">
+          <mxGeometry x="607" y="480" width="45" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="mi" value="Managed Identity&lt;br&gt;&lt;i style=&quot;font-size:11px;color:#888&quot;&gt;DefaultAzureCredential&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#c62828;strokeWidth=2;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="530" y="460" width="210" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- Edge: User → Browser -->
+        <mxCell id="e-user-browser" style="edgeStyle=orthogonalEdgeStyle;strokeWidth=2;strokeColor=#333333;" edge="1" source="user" target="browser" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Edge: Browser → App Service (POST /check with photo) -->
+        <mxCell id="e-browser-app" value="POST /check&lt;br&gt;&lt;i style=&quot;font-size:10px&quot;&gt;image/jpeg&lt;/i&gt;" style="edgeStyle=orthogonalEdgeStyle;strokeWidth=2;strokeColor=#0078D4;fontColor=#0078D4;fontSize=11;" edge="1" source="browser" target="appservice" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Edge: App Service → Azure OpenAI (base64 image + chat stream) -->
+        <mxCell id="e-app-openai" value="chat.completions&lt;br&gt;&lt;i style=&quot;font-size:10px&quot;&gt;stream=True&lt;/i&gt;" style="edgeStyle=orthogonalEdgeStyle;strokeWidth=2;strokeColor=#82b366;fontColor=#82b366;fontSize=11;" edge="1" source="appservice" target="openai" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Edge: App Service → Blob Storage (image upload) -->
+        <mxCell id="e-app-blob" value="upload_blob()" style="edgeStyle=orthogonalEdgeStyle;strokeWidth=2;strokeColor=#d6b656;dashed=1;fontColor=#d6b656;fontSize=11;" edge="1" source="appservice" target="blob" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Edge: App Service ← SSE tokens back to browser -->
+        <mxCell id="e-app-browser-sse" value="SSE tokens" style="edgeStyle=orthogonalEdgeStyle;strokeWidth=2;strokeColor=#c62828;dashed=1;fontColor=#c62828;fontSize=11;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" edge="1" source="appservice" target="browser" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Edge: Managed Identity → App Service (auth) -->
+        <mxCell id="e-mi-app" value="authenticates" style="edgeStyle=orthogonalEdgeStyle;strokeWidth=1;strokeColor=#c62828;dashed=1;fontColor=#c62828;fontSize=10;" edge="1" source="mi" target="appservice" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Flow legend -->
+        <mxCell id="legend" value="&lt;b&gt;Flow&lt;/b&gt;&lt;br&gt;① Passenger scans item via camera&lt;br&gt;② Image sent to GPT-5.4 (streaming)&lt;br&gt;③ Image archived to Blob Storage&lt;br&gt;④ SSE tokens streamed back to browser" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9cc;strokeColor=#d6b656;strokeWidth=2;fontSize=12;align=left;spacingLeft=10;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="70" y="430" width="310" height="110" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

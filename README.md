@@ -58,6 +58,7 @@ airport-kiosk/
 ├── LICENSE
 ├── README.md
 ├── DEPLOYMENT.md         # full Azure App Service deployment guide
+├── architecture.drawio   # draw.io architecture diagram
 ├── main.py               # FastAPI application
 ├── requirements.txt      # Python dependencies
 └── static/
@@ -127,6 +128,8 @@ az webapp deploy --name airport-kiosk --resource-group airport --src-path deploy
 ```
 
 ## 🧠 How It Works
+
+> Open [`architecture.drawio`](architecture.drawio) in [draw.io](https://app.diagrams.net/) or VS Code (with the Draw.io Integration extension) for the full architecture diagram.
 
 ```
 ┌─────────────┐     POST /check       ┌─────────────────┐   chat (stream)     ┌──────────────┐
