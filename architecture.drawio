@@ -10,44 +10,44 @@
           <mxGeometry x="350" y="20" width="500" height="40" as="geometry"/>
         </mxCell>
 
-        <!-- User / Browser -->
-        <mxCell id="user" value="Passenger" style="shape=mxgraph.azure2.user;fillColor=#0078D4;fontColor=#333333;strokeColor=none;align=center;verticalLabelPosition=bottom;html=1;" vertex="1" parent="1">
-          <mxGeometry x="80" y="250" width="50" height="50" as="geometry"/>
+        <!-- Passenger (standard person shape) -->
+        <mxCell id="user" value="Passenger" style="shape=mxgraph.basic.smiley;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=2;fontStyle=1;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="70" y="240" width="60" height="60" as="geometry"/>
         </mxCell>
 
-        <!-- Browser / Kiosk -->
-        <mxCell id="browser" value="Browser&lt;br&gt;&lt;i style=&quot;font-size:11px;color:#888&quot;&gt;Camera + kiosk.html&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=2;fontSize=13;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="200" y="230" width="160" height="80" as="geometry"/>
+        <!-- Browser / Kiosk Device -->
+        <mxCell id="browser" value="Phone / Kiosk&lt;br&gt;&lt;i style=&quot;font-size:11px;color:#888&quot;&gt;Camera + kiosk.html&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=2;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="230" width="170" height="80" as="geometry"/>
         </mxCell>
 
         <!-- Azure cloud boundary -->
-        <mxCell id="azure-cloud" value="Azure" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#0078D4;strokeWidth=3;verticalAlign=top;fontSize=16;fontStyle=1;align=left;spacingLeft=10;dashed=1;dashPattern=12 12;" vertex="1" parent="1">
+        <mxCell id="azure-cloud" value="Azure (Central India)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#0078D4;strokeWidth=3;verticalAlign=top;fontSize=16;fontStyle=1;align=left;spacingLeft=10;dashed=1;dashPattern=12 12;" vertex="1" parent="1">
           <mxGeometry x="460" y="80" width="680" height="520" as="geometry"/>
         </mxCell>
 
         <!-- App Service -->
         <mxCell id="appservice-icon" value="" style="image;aspect=fixed;html=1;points=[];align=center;image=img/lib/azure2/app_services/App_Services.svg;" vertex="1" parent="1">
-          <mxGeometry x="570" y="230" width="50" height="50" as="geometry"/>
+          <mxGeometry x="575" y="240" width="48" height="48" as="geometry"/>
         </mxCell>
-        <mxCell id="appservice" value="App Service&lt;br&gt;&lt;i style=&quot;font-size:11px;color:#888&quot;&gt;FastAPI + uvicorn&lt;/i&gt;&lt;br&gt;&lt;code style=&quot;font-size:10px;color:#666&quot;&gt;airport-kiosk.azurewebsites.net&lt;/code&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=2;fontSize=13;fontStyle=1;verticalAlign=top;" vertex="1" parent="1">
-          <mxGeometry x="520" y="195" width="250" height="130" as="geometry"/>
-        </mxCell>
-
-        <!-- Stage numbers -->
-        <mxCell id="step1" value="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#0078D4;fontColor=#ffffff;strokeColor=none;fontSize=14;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="395" y="245" width="30" height="30" as="geometry"/>
+        <mxCell id="appservice" value="App Service (Linux, F1)&lt;br&gt;&lt;i style=&quot;font-size:11px;color:#888&quot;&gt;FastAPI + uvicorn&lt;/i&gt;&lt;br&gt;&lt;code style=&quot;font-size:10px;color:#666&quot;&gt;airport-kiosk.azurewebsites.net&lt;/code&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=2;fontSize=13;fontStyle=1;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="520" y="195" width="260" height="135" as="geometry"/>
         </mxCell>
 
-        <mxCell id="step2" value="2" style="ellipse;whiteSpace=wrap;html=1;fillColor=#0078D4;fontColor=#ffffff;strokeColor=none;fontSize=14;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="820" y="200" width="30" height="30" as="geometry"/>
+        <!-- Step badges -->
+        <mxCell id="step1" value="\u2460" style="text;html=1;fontSize=18;fontStyle=1;fillColor=none;strokeColor=none;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="400" y="248" width="30" height="30" as="geometry"/>
         </mxCell>
 
-        <mxCell id="step3" value="3" style="ellipse;whiteSpace=wrap;html=1;fillColor=#0078D4;fontColor=#ffffff;strokeColor=none;fontSize=14;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="820" y="400" width="30" height="30" as="geometry"/>
+        <mxCell id="step2" value="\u2461" style="text;html=1;fontSize=18;fontStyle=1;fillColor=none;strokeColor=none;fontColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="810" y="195" width="30" height="30" as="geometry"/>
         </mxCell>
 
-        <mxCell id="step4" value="4" style="ellipse;whiteSpace=wrap;html=1;fillColor=#0078D4;fontColor=#ffffff;strokeColor=none;fontSize=14;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="600" y="400" width="30" height="30" as="geometry"/>
+        <mxCell id="step3" value="\u2462" style="text;html=1;fontSize=18;fontStyle=1;fillColor=none;strokeColor=none;fontColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="810" y="395" width="30" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="step4" value="\u2463" style="text;html=1;fontSize=18;fontStyle=1;fillColor=none;strokeColor=none;fontColor=#c62828;" vertex="1" parent="1">
+          <mxGeometry x="400" y="290" width="30" height="30" as="geometry"/>
         </mxCell>
 
         <!-- Azure OpenAI -->
@@ -68,10 +68,10 @@
 
         <!-- Managed Identity -->
         <mxCell id="mi-icon" value="" style="image;aspect=fixed;html=1;points=[];align=center;image=img/lib/azure2/identity/Managed_Identities.svg;" vertex="1" parent="1">
-          <mxGeometry x="607" y="480" width="45" height="45" as="geometry"/>
+          <mxGeometry x="612" y="485" width="40" height="40" as="geometry"/>
         </mxCell>
-        <mxCell id="mi" value="Managed Identity&lt;br&gt;&lt;i style=&quot;font-size:11px;color:#888&quot;&gt;DefaultAzureCredential&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#c62828;strokeWidth=2;fontSize=13;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="530" y="460" width="210" height="80" as="geometry"/>
+        <mxCell id="mi" value="Managed Identity&lt;br&gt;&lt;i style=&quot;font-size:11px;color:#888&quot;&gt;No API keys&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#c62828;strokeWidth=2;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="540" y="465" width="190" height="75" as="geometry"/>
         </mxCell>
 
         <!-- Edge: User → Browser -->
@@ -104,9 +104,9 @@
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
-        <!-- Flow legend -->
-        <mxCell id="legend" value="&lt;b&gt;Flow&lt;/b&gt;&lt;br&gt;① Passenger scans item via camera&lt;br&gt;② Image sent to GPT-5.4 (streaming)&lt;br&gt;③ Image archived to Blob Storage&lt;br&gt;④ SSE tokens streamed back to browser" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9cc;strokeColor=#d6b656;strokeWidth=2;fontSize=12;align=left;spacingLeft=10;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="70" y="430" width="310" height="110" as="geometry"/>
+        <!-- Legend -->
+        <mxCell id="legend" value="&lt;b&gt;Flow&lt;/b&gt;&lt;br&gt;\u2460 Passenger scans item via phone or airport kiosk&lt;br&gt;\u2461 Image sent to GPT-5.4 for ICAO rule check&lt;br&gt;\u2462 Image archived to Blob Storage&lt;br&gt;\u2463 Streaming verdict returned (Allowed / Prohibited)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9cc;strokeColor=#d6b656;strokeWidth=2;fontSize=12;align=left;spacingLeft=10;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="420" width="340" height="120" as="geometry"/>
         </mxCell>
 
       </root>
