@@ -18,7 +18,6 @@ ENV/
 
 # Logs
 *.log
-kiosk.log
 
 # IDE
 .vscode/

@@ -24,7 +24,7 @@ Created by [vinayjain@microsoft.com](mailto:vinayjain@microsoft.com) / [vinex22@
 - [API Endpoints](#-api-endpoints)
 - [Local Development](#-local-development)
 - [Deployment](#️-deployment)
-- [How It Works](#-how-it-works)
+- [Architecture](#-how-it-works)
 - [Troubleshooting](#️-troubleshooting)
 - [License](#-license)
 
@@ -53,16 +53,18 @@ The kiosk covers all ICAO prohibited categories: weapons, sharp objects, tools, 
 
 ```
 airport-kiosk/
-├── .env.example          # environment variable template
+├── main.py               # FastAPI application
+├── requirements.txt       # Python dependencies
+├── .env.example           # environment variable template
 ├── .gitignore
 ├── LICENSE
 ├── README.md
-├── DEPLOYMENT.md         # full Azure App Service deployment guide
-├── architecture.drawio   # draw.io architecture diagram
-├── main.py               # FastAPI application
-├── requirements.txt      # Python dependencies
-└── static/
-    └── kiosk.html        # Kiosk UI (camera + scan)
+├── static/
+│   └── kiosk.html         # Kiosk UI (camera + scan)
+└── docs/
+    ├── DEPLOYMENT.md      # Azure App Service deployment guide
+    ├── architecture.drawio # editable draw.io diagram
+    └── architecture.png   # architecture diagram (shown below)
 ```
 
 ## ⚙️ Configuration
@@ -119,7 +121,7 @@ Open http://localhost:8000 in your browser (camera access requires HTTPS in prod
 
 ## ☁️ Deployment
 
-See [DEPLOYMENT.md](DEPLOYMENT.md) for full Azure App Service deployment instructions.
+See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for full Azure App Service deployment instructions.
 
 ```bash
 # Quick deploy
@@ -127,18 +129,17 @@ Compress-Archive -Path main.py, requirements.txt, static -DestinationPath deploy
 az webapp deploy --name airport-kiosk --resource-group airport --src-path deploy.zip --type zip
 ```
 
-## 🧠 How It Works
+## 🧠 Architecture
 
-> Open [`architecture.drawio`](architecture.drawio) in [draw.io](https://app.diagrams.net/) or VS Code (with the Draw.io Integration extension) for the full architecture diagram.
+![Architecture](docs/architecture.png)
 
-```
-┌─────────────┐     POST /check       ┌─────────────────┐   chat (stream)     ┌──────────────┐
-│   Browser    │ ──── photo ─────────> │  FastAPI Server  │ ─── base64 img ──> │ Azure OpenAI │
-│  (kiosk)     │ <─── SSE tokens ──── │   (main.py)      │ <── token stream ─ │  GPT-5.4     │
-└─────────────┘                        └─────────────────┘                     └──────────────┘
-```
+> Edit the diagram: open [`docs/architecture.drawio`](docs/architecture.drawio) in [draw.io](https://app.diagrams.net/) or VS Code.
 
-All scanned images are also uploaded to **Azure Blob Storage** for audit/archival, organized by date.
+**Flow:**
+1. Passenger scans item via phone or airport kiosk camera
+2. Image sent to Azure OpenAI GPT-5.4 for ICAO rule check (streaming)
+3. Image archived to Azure Blob Storage
+4. Streaming verdict returned to browser (Allowed / Prohibited)
 
 ## 🛠️ Troubleshooting
 
