@@ -1,8 +1,37 @@
 # 🛡️ airport-kiosk
 
+[![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Azure AI Vision](https://img.shields.io/badge/Azure%20AI%20Vision-0078D4?logo=microsoftazure&logoColor=white)](https://azure.microsoft.com/products/ai-services/ai-vision)
+[![Azure OpenAI](https://img.shields.io/badge/Azure%20OpenAI-GPT--5.4-412991?logo=openai&logoColor=white)](https://azure.microsoft.com/products/ai-services/openai-service)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Deploy: Azure App Service](https://img.shields.io/badge/Deployed%20on-Azure%20App%20Service-0078D4?logo=microsoftazure)](https://airport-kiosk.azurewebsites.net)
+
 Created by [vinayjain@microsoft.com](mailto:vinayjain@microsoft.com) / [vinex22@gmail.com](mailto:vinex22@gmail.com)
 
-AI-powered airport security screening using Azure AI Vision and GPT-5.4, authenticated with `DefaultAzureCredential` (no API keys 🔑).
+**AI-powered airport security screening** that uses **Azure AI Vision** and **Azure OpenAI GPT-5.4** to detect objects in real time and assess whether items are permitted in cabin baggage — based on ICAO international aviation security rules. Built with **FastAPI**, authenticated with `DefaultAzureCredential` (no API keys 🔑).
+
+> **Keywords:** airport security AI, baggage screening AI, object detection Azure, carry-on item checker, aviation security kiosk, Azure AI Vision, GPT-5.4 multimodal, FastAPI computer vision, real-time threat detection, ICAO prohibited items
+
+---
+
+## 📑 Table of Contents
+
+- [Overview](#-overview)
+- [Prerequisites](#-prerequisites)
+- [Project Structure](#-project-structure)
+- [Configuration](#️-configuration)
+- [Features](#-features)
+- [API Endpoints](#-api-endpoints)
+- [Local Development](#-local-development)
+- [Deployment](#️-deployment)
+- [How It Works](#-how-it-works)
+- [Troubleshooting](#️-troubleshooting)
+- [License](#-license)
+
+---
+
+## 🔎 Overview
 
 | | Security Camera (`/`) | Passenger Kiosk (`/kiosk`) |
 |---|---|---|
@@ -109,6 +138,27 @@ Compress-Archive -Path main.py, requirements.txt, static -DestinationPath deploy
 az webapp deploy --name airport-kiosk --resource-group airport --src-path deploy.zip --type zip
 ```
 
+## 🧠 How It Works
+
+```
+┌─────────────┐     POST /detect      ┌─────────────────┐     analyze()     ┌──────────────────┐
+│   Browser    │ ──── image frame ───> │  FastAPI Server  │ ───────────────> │ Azure AI Vision  │
+│  (webcam)    │ <─── bounding boxes ─ │   (main.py)      │ <── objects ──── │ (Image Analysis) │
+└─────────────┘                        └─────────────────┘                  └──────────────────┘
+
+┌─────────────┐     POST /detect-llm   ┌─────────────────┐   chat.completions  ┌──────────────┐
+│   Browser    │ ──── image frame ───> │  FastAPI Server  │ ─── base64 img ──> │ Azure OpenAI │
+│  (webcam)    │ <─── threat flags ─── │   (main.py)      │ <── JSON items ─── │ GPT-5.4-nano │
+└─────────────┘                        └─────────────────┘                     └──────────────┘
+
+┌─────────────┐     POST /kiosk/check  ┌─────────────────┐   chat (stream)     ┌──────────────┐
+│   Browser    │ ──── photo ─────────> │  FastAPI Server  │ ─── base64 img ──> │ Azure OpenAI │
+│  (kiosk)     │ <─── SSE tokens ──── │   (main.py)      │ <── token stream ─ │  GPT-5.4     │
+└─────────────┘                        └─────────────────┘                     └──────────────┘
+```
+
+All images are also uploaded to **Azure Blob Storage** for audit/archival, organized by endpoint and date.
+
 ## 🛠️ Troubleshooting
 
 | Problem | Solution |
@@ -122,4 +172,16 @@ az webapp deploy --name airport-kiosk --resource-group airport --src-path deploy
 
 ## 📜 License
 
-MIT
+MIT — see [LICENSE](LICENSE) for details.
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please open an issue first to discuss what you'd like to change.
+
+---
+
+<p align="center">
+  <sub>Built with ❤️ using Azure AI Services · <a href="https://airport-kiosk.azurewebsites.net">Live Demo</a></sub>
+</p>
