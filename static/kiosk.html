@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airport Kiosk - Can I Carry This?</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #0a1628;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 24px;
+        }
+        .logos { display: flex; align-items: center; gap: 18px; margin-bottom: 1rem; }
+        .logos img { height: 32px; }
+        .logos span { font-size: 22px; color: #999; }
+        @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        .bounce1 { animation: bounce 2s ease-in-out infinite; }
+        .bounce2 { animation: bounce 2s ease-in-out infinite 0.3s; }
+        .bounce3 { animation: bounce 2s ease-in-out infinite 0.6s; }
+        .header { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+        .header h1 { margin: 0; font-size: 28px; }
+        .badge { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 11px; font-weight: 600; color: #fff; }
+        .badge-llm { background: #6c5ce7; }
+        .badge-safe { background: #2563eb; }
+        .subtitle { color: #b2bec3; margin-bottom: 20px; font-size: 16px; }
+        .camera-box {
+            position: relative;
+            width: 480px;
+            height: 360px;
+            background: #1e2d3d;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid #2d3436;
+        }
+        video, #snapshot { width: 100%; height: 100%; object-fit: cover; }
+        #snapshot { display: none; position: absolute; top: 0; left: 0; }
+        .controls { margin-top: 20px; display: flex; gap: 12px; }
+        button {
+            padding: 14px 32px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.1s;
+        }
+        button:active { transform: scale(0.97); }
+        button:disabled { opacity: 0.4; cursor: not-allowed; }
+        #scanBtn { background: #0984e3; color: #fff; font-size: 20px; }
+        #retryBtn { background: #636e72; color: #fff; display: none; }
+        .result-card {
+            margin-top: 24px;
+            width: 480px;
+            border-radius: 12px;
+            padding: 24px;
+            display: none;
+            text-align: center;
+        }
+        .result-card.allowed {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            display: block;
+        }
+        .result-card.prohibited {
+            background: linear-gradient(135deg, #d63031, #e17055);
+            display: block;
+        }
+        .result-card .verdict { font-size: 48px; margin-bottom: 8px; }
+        .result-card .detected-label { font-size: 13px; opacity: 0.7; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
+        .result-card .item-name { font-size: 24px; font-weight: bold; margin-bottom: 4px; }
+        .result-card .category { font-size: 14px; opacity: 0.85; margin-bottom: 8px; }
+        .result-card .reason { font-size: 16px; opacity: 0.9; margin-bottom: 12px; }
+        .result-card .tip { font-size: 14px; opacity: 0.8; font-style: italic; }
+        #status {
+            margin-top: 16px;
+            font-size: 15px;
+            color: #b2bec3;
+            min-height: 24px;
+        }
+        .spinner {
+            display: inline-block;
+            width: 20px; height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .nav { margin-bottom: 20px; }
+        .nav a { color: #74b9ff; text-decoration: none; font-size: 14px; }
+        footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.15); font-size: 12px; color: #636e72; text-align: center; width: 100%; max-width: 480px; }
+        footer strong { color: #b2bec3; }
+    </style>
+</head>
+<body>
+    <div class="logos">
+        <img src="https://img.icons8.com/color/48/microsoft.png" alt="Microsoft" class="bounce1" />
+        <span class="bounce2">+</span>
+        <img src="https://img.icons8.com/fluency/48/azure-1.png" alt="Azure" class="bounce2" />
+        <span class="bounce3">+</span>
+        <img src="https://img.icons8.com/fluency/48/camera.png" alt="Vision" class="bounce3" />
+    </div>
+    <div class="nav"><a href="/">Back to Security View</a></div>
+    <div class="header">
+        <h1>&#9992;&#65039; Can I Carry This On Board?</h1>
+        <span class="badge badge-llm">GPT-5.4</span>
+        <span class="badge badge-safe">ICAO Rules</span>
+    </div>
+    <p class="subtitle">Show your item to the camera and tap Scan</p>
+
+    <div class="camera-box">
+        <video id="video" autoplay muted playsinline></video>
+        <img id="snapshot" alt="captured frame">
+    </div>
+
+    <div class="controls">
+        <button id="scanBtn" onclick="scan()">Scan Item</button>
+        <button id="retryBtn" onclick="retry()">Scan Another</button>
+    </div>
+    <div id="status"></div>
+
+    <div class="result-card" id="resultCard">
+        <div class="verdict" id="verdict"></div>
+        <div class="detected-label">Detected item</div>
+        <div class="item-name" id="itemName"></div>
+        <div class="category" id="category"></div>
+        <div class="reason" id="reason"></div>
+        <div class="tip" id="tip"></div>
+    </div>
+
+    <script>
+        const video = document.getElementById('video');
+        const snapshot = document.getElementById('snapshot');
+        const scanBtn = document.getElementById('scanBtn');
+        const retryBtn = document.getElementById('retryBtn');
+        const statusEl = document.getElementById('status');
+        const resultCard = document.getElementById('resultCard');
+
+        async function initCamera() {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { width: 480, height: 360, facingMode: 'environment' }
+            });
+            video.srcObject = stream;
+        }
+
+        function captureFrame() {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.85));
+        }
+
+        async function scan() {
+            scanBtn.disabled = true;
+            retryBtn.style.display = 'none';
+            resultCard.className = 'result-card';
+            resultCard.removeAttribute('style');
+            statusEl.innerHTML = '<span class="spinner"></span> Analyzing item...';
+
+            try {
+                const blob = await captureFrame();
+
+                // Show frozen snapshot of what was captured
+                const url = URL.createObjectURL(blob);
+                snapshot.src = url;
+                snapshot.style.display = 'block';
+
+                const form = new FormData();
+                form.append('image', blob, 'item.jpg');
+
+                // Show streaming card immediately
+                resultCard.className = 'result-card allowed';
+                resultCard.style.display = 'block';
+                document.getElementById('verdict').textContent = '...';
+                document.getElementById('itemName').textContent = '';
+                document.getElementById('category').textContent = '';
+                document.getElementById('reason').textContent = '';
+                document.getElementById('tip').textContent = '';
+
+                const resp = await fetch('/kiosk/check', { method: 'POST', body: form });
+                const reader = resp.body.getReader();
+                const decoder = new TextDecoder();
+                let jsonStr = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    const text = decoder.decode(value, { stream: true });
+                    const lines = text.split('\n');
+                    for (const line of lines) {
+                        if (!line.startsWith('data: ')) continue;
+                        const payload = JSON.parse(line.slice(6));
+                        if (payload.done) break;
+                        if (payload.token) {
+                            jsonStr += payload.token;
+                            statusEl.innerHTML = '<span class="spinner"></span> Reading response...';
+                            // Try to parse partial JSON to show early results
+                            tryShowPartial(jsonStr);
+                        }
+                    }
+                }
+
+                // Final parse
+                let raw = jsonStr.trim();
+                if (raw.startsWith('```')) raw = raw.split('\n', 2)[1].split('```')[0].trim();
+                try {
+                    const data = JSON.parse(raw);
+                    showResult(data);
+                } catch(e) {
+                    statusEl.textContent = 'Could not parse response';
+                    scanBtn.disabled = false;
+                }
+            } catch (err) {
+                statusEl.textContent = 'Error: ' + err.message;
+                scanBtn.disabled = false;
+            }
+        }
+
+        function tryShowPartial(s) {
+            // Try to extract item name early from partial JSON
+            const itemMatch = s.match(/"item"\s*:\s*"([^"]+)"/);
+            if (itemMatch) {
+                document.getElementById('itemName').textContent = itemMatch[1];
+            }
+            const allowedMatch = s.match(/"allowed"\s*:\s*(true|false)/);
+            if (allowedMatch) {
+                const allowed = allowedMatch[1] === 'true';
+                resultCard.className = 'result-card ' + (allowed ? 'allowed' : 'prohibited');
+                document.getElementById('verdict').textContent = allowed ? 'YES' : 'NO';
+            }
+            const catMatch = s.match(/"category"\s*:\s*"([^"]+)"/);
+            if (catMatch) {
+                document.getElementById('category').textContent = catMatch[1];
+            }
+            const reasonMatch = s.match(/"reason"\s*:\s*"([^"]+)"/);
+            if (reasonMatch) {
+                document.getElementById('reason').textContent = reasonMatch[1];
+            }
+            const tipMatch = s.match(/"tip"\s*:\s*"([^"]+)"/);
+            if (tipMatch) {
+                document.getElementById('tip').textContent = 'Tip: ' + tipMatch[1];
+            }
+        }
+
+        function showResult(data) {
+            statusEl.textContent = '';
+            const allowed = data.allowed;
+
+            resultCard.className = 'result-card ' + (allowed ? 'allowed' : 'prohibited');
+            resultCard.style.display = 'block';
+            document.getElementById('verdict').textContent = allowed ? 'YES' : 'NO';
+            document.getElementById('itemName').textContent = data.item || 'Unknown item';
+            document.getElementById('category').textContent = data.category || '';
+            document.getElementById('reason').textContent = data.reason || '';
+            document.getElementById('tip').textContent = data.tip ? 'Tip: ' + data.tip : '';
+
+            retryBtn.style.display = 'inline-block';
+        }
+
+        function retry() {
+            resultCard.className = 'result-card';
+            resultCard.style.display = 'none';
+            resultCard.style.display = 'none';
+            snapshot.style.display = 'none';
+            retryBtn.style.display = 'none';
+            scanBtn.disabled = false;
+            statusEl.textContent = 'Show your item to the camera and tap Scan';
+        }
+
+        // Auto-start camera
+        initCamera().then(() => {
+            statusEl.textContent = 'Show your item to the camera and tap Scan';
+        }).catch(err => {
+            statusEl.textContent = 'Camera error: ' + err.message;
+        });
+    </script>
+    <footer>v1.0 &middot; Built by <strong>Vinex22@gmail.com</strong> &middot; <strong>Vinayjain@microsoft.com</strong></footer>
+</body>
+</html>
